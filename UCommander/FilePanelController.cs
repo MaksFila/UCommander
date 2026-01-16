@@ -16,10 +16,13 @@ namespace UCommander
 
         public EventHandler? Activated;
 
+        private FileIconController iconController;
+
         public FilePanelController(ListView listView, TextBox pathTextBox)
         {
             ListView = listView ?? throw new ArgumentNullException(nameof(listView));
             PathTextBox = pathTextBox ?? throw new ArgumentNullException(nameof(pathTextBox));
+            iconController = new FileIconController(ListView);
 
             ConfigureListView();
 
@@ -109,6 +112,7 @@ namespace UCommander
                     parentItem.SubItems.Add(string.Empty); // Type
                     parentItem.SubItems.Add(string.Empty); // Size
                     parentItem.SubItems.Add(string.Empty); // Creation Date
+                    iconController.SetItemIcon(parentItem, "folder");
                     ListView.Items.Add(parentItem);
                 }
                 IOrderedEnumerable<DirectoryInfo> directories = directoryInfo.EnumerateDirectories().OrderBy(d => d.Name, StringComparer.OrdinalIgnoreCase);
@@ -118,6 +122,7 @@ namespace UCommander
                     item.SubItems.Add("Folder"); // Type
                     item.SubItems.Add(string.Empty); // Size
                     item.SubItems.Add(d.CreationTime.ToString("g")); // Creation Date
+                    iconController.SetItemIcon(item, "folder");
                     ListView.Items.Add(item);
                 }
                 IOrderedEnumerable<FileInfo> files = directoryInfo.EnumerateFiles().OrderBy(f => f.Name, StringComparer.OrdinalIgnoreCase);
@@ -129,6 +134,7 @@ namespace UCommander
                         item.SubItems.Add(ext); // Type (extension)
                         item.SubItems.Add(FormatSize(f.Length)); // Size
                         item.SubItems.Add(f.CreationTime.ToString("g")); // Creation Date
+                        iconController.SetItemIcon(item, f.Extension);
                         ListView.Items.Add(item);
                     }
 
